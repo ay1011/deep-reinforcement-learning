@@ -19,7 +19,7 @@ The state space has 37 dimensions and contains the agent's velocity, along with 
 - **`2`** - turn left.
 - **`3`** - turn right.
 
-The task is episodic, and in order to solve the environment, your agent must get an average score of +13 over 100 consecutive episodes.
+The task is episodic, and in order to solve the environment, the agent must get an average score of +13 over 100 consecutive episodes.
 
 ### Getting Started
 
@@ -38,5 +38,5 @@ The task is episodic, and in order to solve the environment, your agent must get
 ### Instructions
 run the `Navigation.ipynb` notebook using the drlnd kernel to train the DQN agent.
 
-The model weights will be saved in the same directory as `checkpointdemo.pth`.
+The model weights will be saved in the same directory as `checkpoint.pth`.
 
