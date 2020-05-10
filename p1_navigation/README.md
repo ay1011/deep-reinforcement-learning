@@ -36,7 +36,6 @@ The task is episodic, and in order to solve the environment, the agent must get 
 2. Place the file in the DRLND GitHub repository, in the `p1_navigation/` folder, and unzip (or decompress) the file.
 
 ### Instructions
-run the `Navigation.ipynb` notebook using the drlnd kernel to train the DQN agent.
-
+Run the `Navigation.ipynb` notebook using the drlnd kernel to train the DQN agent.
 The model weights will be saved in the same directory as `checkpoint.pth`.
 
