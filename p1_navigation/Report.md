@@ -18,7 +18,7 @@ Training parameters used in `Navigation.ipynb`:
 * Ending epsilion: 0.01
 * Epsilion decay rate: 0.995
 
-Parameters used in `dqn_agent.py:
+Parameters used in `dqn_agent.py`:
 ```
 BUFFER_SIZE = int(1e5)  # replay buffer size
 BATCH_SIZE = 64         # minibatch size
