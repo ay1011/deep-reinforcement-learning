@@ -59,7 +59,7 @@ This is made possible as the agent started its training from a checkpoint that s
    ![](PER.PNG)
    Deep Q-Learning samples experience transitions uniformly from a replay memory.
    Prioritized experienced replay assumes that the agent can learn more effectively
-   from some transitions than from others, particularly when the TD error is large and if the occurrence of a state is rare
+   from some transitions than from others, particularly when the TD error is large and if frequency of the transition is low.
    The more important and less frequent transitions are sampled with higher probability from the replay buffer.
 
 
