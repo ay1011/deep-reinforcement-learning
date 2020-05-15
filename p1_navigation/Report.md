@@ -48,6 +48,7 @@ This is made possible as the agent started its training from a checkpoint that s
    ![](overestimation.PNG)
 
    ![](Double.PNG)
+
    DQN tends to overestimate Q-values, particularly at the start of training,
    where some states have high Q-values by chance. Double DQN technique to deal with the overestimation problem
    is to use different set of weights to select the best action and another set of weights to evaluate it.
