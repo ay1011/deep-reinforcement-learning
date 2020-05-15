@@ -32,7 +32,20 @@ The hyperparameters in the neural network architecture (model.py), agent (dqn_ag
 
 ![algorithm](DQNAlgo.PNG)
 
+#### Experience Replay
 
+The replay buffer contains a collection of experience tuples (S, A, R', S')
+The tuples are added to the buffer as the agent interacts with the environment.
+Experience replay is the (random) sampling of a small batch of tuples from the replay buffer for learning.
+This helps to break harmful correlations between next states and action taken while allowing the agent to learn from each tuple multiple times and recall rare occurrences.
+
+![](TDerror.PNG)
+#### Fixed Q-Targets
+
+In Q-Learning, the TD target term is supposed to be the optimal policy. but in practice, is replaced with an estimate dependent on its parameters.
+To make the TD target term more robust, we can update the parameters w in the network q
+where w- are the weights of a separate target network that are not changed during the learning step
+′
 ## Results
 
 The DQN agent successfully solved the environment after 664 episodes in 13 minutes 28 seconds.
