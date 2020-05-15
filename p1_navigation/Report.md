@@ -42,7 +42,7 @@ This helps to break harmful correlations between next states and action taken wh
 ![](TDerror.PNG)
 #### Fixed Q-Targets
 
-In Q-Learning, the TD target term is supposed to be the optimal policy. but in practice, is replaced with an estimate dependent on its parameters.
+In Q-Learning, the TD target term is supposed to be the optimal policy. but in practice, is replaced with an estimate from a network dependent on its parameters.
 To make the TD target term more robust, we can update the parameters w in the network q
 where w- are the weights of a separate target network that are not changed during the learning step
 ′
