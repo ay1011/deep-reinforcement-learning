@@ -50,7 +50,7 @@ This is made possible as the agent started its training from a checkpoint that s
    ![](Double.PNG)
 
    DQN tends to overestimate Q-values, particularly at the start of training,
-   where some states have high Q-values by chance. Double DQN technique to deal with the overestimation problem
+   where some states have high Q-values by chance. Double DQN's technique to deal with the overestimation problem
    is to use different set of weights to select the best action and another set of weights to evaluate it.
    The second set of weights may be obtained with from DQNs with Fixed Q-targets. These are weights that are not updated during the learning step.
 
