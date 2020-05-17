@@ -21,8 +21,6 @@ A reward of +0.1 is provided for each timestep that the agent's hand is in conta
 In order to solve the environment, the agent must achieve a score of +30 averaged across all 20 agents
 for 100 consecutive episodes.
 
-![Trained Agent][image1]
-
 ## Summary of Environment
 ```python
 INFO:unityagents:
@@ -58,7 +56,6 @@ The state for the first agent looks like: [ 0.00000000e+00 -4.00000000e+00  0.00
 
 ```
 - In this environment, a double-jointed arm can move to target locations.
-- A reward of +0.1 is provided for each step that the agent's hand is in the goal location.
 - The observation space consists of 33 variables corresponding to position, rotation, velocity, and angular velocities
 of the arm.
 - Each action is a vector with four numbers, corresponding to torque applicable to two joints.
@@ -82,7 +79,7 @@ while True:
         break
 print('Total score (averaged over agents) this episode: {}'.format(np.mean(scores)))
 ```
-
+The score is usually below 1 for random agents.
 
 
 ## Algorithm Description of DDPG
@@ -99,13 +96,13 @@ To tackle this problem, we investigate policy-based method algorithms which have
 2. Stochastic policies — Policy-based methods can learn true stochastic policies.
 3. Simplicity — Policy-based methods directly learn the optimal policy, without a separate value function estimate.
 With value-based methods, the agent creates a Q-table as an estimate of the optimal action-value function, from which an optimal policy is derived.
-Discretisation (Tile Coding) of the continuous action space may prove infeasible since it be computationally expensive due to the large storage space for the Q-table.
+Discretisation (Tile Coding) of the continuous action space may prove infeasible since it will be computationally expensive due to the large storage space for the Q-table.
 
 
 
-Deep Deterministic Policy Gradient (DDPG) was introduced in Deepmind's reseachers as "a model-free, off-policy actor-critic algorithm
-using deep function approximators that can learn policies in high-dimensional, continuous action spaces."
-in this [paper](https://arxiv.org/pdf/1509.02971.pdf).  It may also be though t of as a DQN method for continuous action spaces.
+Deep Deterministic Policy Gradient (DDPG) was introduced by Deepmind's reseachers as "a model-free, off-policy actor-critic algorithm
+using deep function approximators that can learn policies in high-dimensional, continuous action spaces"
+in this [paper](https://arxiv.org/pdf/1509.02971.pdf).  It may also be regarded as a DQN method for continuous action spaces.
 
 
 #### Actor Critic
@@ -116,7 +113,7 @@ estimating the optimal policy and maximizing reward through gradient ascent.
 - Through the value-based approach, the critic estimates the value of future rewards of state-action pairs.
 
 Udacity's single-agent DDPG [code](https://github.com/udacity/deep-reinforcement-learning/blob/master/ddpg-pendulum/ddpg_agent.py)
-was used as starting point for this project.
+was used as the  starting point for this project.
 
 #### Hyperparameters of DDPG agent
 ```python
@@ -128,7 +125,7 @@ LR_ACTOR = 1e-3         # learning rate of the actor
 LR_CRITIC = 1e-3        # learning rate of the critic
 WEIGHT_DECAY = 0.000001 # L2 weight decay
 ```
-The hyperparameters in the neural network architecture (model.py), agent (ddpg_agent) and training (Navigation.ipynb) have not been optimised due to the lack of time and resources.
+The hyperparameters in the neural network architecture (model.py), agent (ddpg_agent) and training (Continuous_Control-v20.ipynb) have not been optimised due to the lack of time and resources.
 
 #### DDPG agent code
 ```python
@@ -328,7 +325,7 @@ class ReplayBuffer:
         """Return the current size of internal memory."""
         return len(self.memory)
 ```
-####Actor Critic Architecture
+#### Actor Critic Architecture
 
 ```python
 def hidden_init(layer):
@@ -424,9 +421,9 @@ class Critic(nn.Module):
 ```
 #### Batch normalisation
 Batch normalisation, typically used in Convolutional Neural Networks (CNN) have been used on the
-output of the first hidden later for both the Actor and the Critic.
+output of the first hidden layer for both the Actor and the Critic.
 
-Batch normalisation normalises the output of a previous activation layer by subtracting the batch mean divides by the batch standard deviation,
+Batch normalisation normalises the output of a previous activation layer by subtracting the batch mean divided by the batch standard deviation,
 resulting in values around 0 to 1. This ensures the activation values are not too large and overwhelms the learning process.
 
 Benefits of batch normalisation include:
