@@ -427,7 +427,7 @@ for i in range(1, 6):                                      # play game for 5 epi
     >> Score (max over agents) from episode 1: 2.600000038743019
     >> Score (max over agents) from episode 2: 2.7000000402331352
     >> Score (max over agents) from episode 3: 2.600000038743019
-    >>Score (max over agents) from episode 4: 2.600000038743019
+    >> Score (max over agents) from episode 4: 2.600000038743019
     >> Score (max over agents) from episode 5: 2.7000000402331352
 ```
 The agent consistently manages to obtain scores around 2.6.
