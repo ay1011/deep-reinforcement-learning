@@ -44,7 +44,7 @@ the net, and jumping.
 
 # Random Agent as a Benchmark
 ```python
-efor i in range(1, 6):                                      # play game for 5 episodes
+for i in range(1, 6):                                      # play game for 5 episodes
     env_info = env.reset(train_mode=False)[brain_name]     # reset the environment
     states = env_info.vector_observations                  # get the current state (for each agent)
     scores = np.zeros(num_agents)                          # initialize the score (for each agent)
@@ -79,11 +79,11 @@ algorithm - a centralised critic and decentralised actor framework.
 
 
 - During training, a centralised critic module (shared replay buffer) provides agents with
-information about the observation and hence the  potential action all agents. This ensure that
+information about the observation and hence the  potential action all agents. This ensures that
 the training environment remains stationary, even if the policies of other agents change.
-P(s'<sub>0</sub> | s, a <sub>1</sub>, ..., a<sub>N</sub> , π<sub>1</sub>, ..., π<sub>N</sub> ) =
-(s<sub>0</sub> | s, a <sub>1</sub>, ..., a<sub>N</sub> ) =
-(s'<sub>0</sub> | s, a <sub>1</sub>, ..., a<sub>N</sub> , π'<sub>1</sub>, ..., π'<sub>N</sub> ) =
+P(s'| s, a <sub>1</sub>, ..., a<sub>N</sub> , π<sub>1</sub>, ..., π<sub>N</sub> ) =
+(s' | s, a <sub>1</sub>, ..., a<sub>N</sub> ) =
+(s' | s, a <sub>1</sub>, ..., a<sub>N</sub> , π'<sub>1</sub>, ..., π'<sub>N</sub> ) =
 for any π<sub>i</sub> ≠ π<sub>j</sub>.
 
 - During testing , the agent does not have access to all the  information,
@@ -111,7 +111,9 @@ lr_critic=1e-3,         # learning rate of the critic
 weight_decay=0.00000001,# L2 weight decay
 RANDOM_SEED=0
 ```
-The hyperparameters in the neural network architecture (model.py), agent (ddpg_agent) and training (Continuous_Control-v20.ipynb) have not been optimised due to the lack of time and resources.
+The hyperparameters in the neural network architecture (model.py),
+agent (maddpg_agent) and training (Tennis.ipynb)
+have not been optimised due to the lack of time and resources.
 
 #### MADDPG agent code
 ```python
@@ -262,11 +264,12 @@ inhibiting the learning process.
 ```python
 torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
 ```
- he function clips the norm of the gradients at 1,limiting the size of the parameter updates.
-Note tha the norm is computed over all gradients together,
+The function clips the norm of the gradients at 1, limiting the size of the parameter updates.
+Note that the norm is computed over all gradients together,
 as if they were concatenated into a single vector.
 #### Soft Updates
-The target network weights are gradually updated by blending the local network weights with proportion tau (0.1%).
+The target network weights are gradually updated by blending the local network weights
+with proportion tau (0.1) for faster learning.
 This ensures that the weights of the network only changes slightly during each updates, aiding the stability of learning.
 
 
@@ -378,20 +381,20 @@ class Critic(nn.Module):
 ```
 #### Batch normalisation
 Batch normalisation is again used for this project.
-This time 2 batchnorm layers  are applied to the first 2 layers of the Actor agent
-while only 1 batchnorm layer is applied to the first layer of the Critic Agent.
-In my case, 2 batchnorm layers in the Critic Agent seem to slow down training.
+This time 2 batchnorm layers  are applied to the first 2 layers of the Actor module
+while only 1 batchnorm layer is applied to the first layer of the Critic module.
+In my case, 2 batchnorm layers in the Critic module seem to slow down training.
 
 #### Leaky Relu
 
 ![](LeakyRelu.PNG)
 
-The Leaky Relu, which a small gradient in the negative range,
+The Leaky Relu, which has a small gradient in the negative range,
 is considered to be an improvement over the Relu.
 It solves the problem of the 'dying relu',
 where the values of the Relu is zero for all negative input values,
-allowing for higher learning rates.
-The dying problem usually occurs when the learning rate is too high.
+It allows for higher learning rates since the dying problem usually
+ occurs when the learning rate is too high.
 
 
 A ReLU neuron is “dead” if it’s stuck in the negative side and remains at 0.
@@ -433,4 +436,6 @@ The agent consistently manages to obtain scores around 2.6.
 
 1. Additional improvements to this implementation of MADDPG maybe the introduction of Prioritised Experience Replay for more robust and stable learning.
 2. PPO could be another RL algorithm to implement as an alternative  for this task.
-3. Another avenue would be to modify the structure of the MADDPG agent by training it with only one shared critic network.
+3. Another avenue would be to modify the structure of the MADDPG agent by training
+it with only one shared critic network.
+4. Explore the idea of tau decay as a method to increase robustness/ stability of training
