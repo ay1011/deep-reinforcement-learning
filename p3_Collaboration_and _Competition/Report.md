@@ -98,7 +98,7 @@ information during training and testing periods.
 
 #### Hyperparameters of MADDPG agent
 ```python
-BLEARN_EVERY = 1         # learning timestep interval
+LEARN_EVERY = 1         # learning timestep interval
 LEARN_NUM = 5           # number of learning passes
 BUFFER_SIZE = int(1e6)  # replay buffer size
 BATCH_SIZE = 128        # minibatch size
@@ -117,7 +117,7 @@ have not been optimised due to the lack of time and resources.
 
 #### MADDPG agent code
 ```python
-class Agent():
+class Agent(object):
     """Interacts with and learns from the environment."""
 
     def __init__(
@@ -125,14 +125,16 @@ class Agent():
         state_size=None,        # state space size
         action_size=None,       # action size
         memory=None,
-        buffer_size=BUFFER_SIZE,# replay buffer size
-        batch_size=BATCH_SIZE,  # minibatch size
+        buffer_size=int(1e6),   # replay buffer size
+        batch_size=512,         # minibatch size
         gamma=0.99,             # discount factor
         tau=5e-3,               # for soft update of target parameters
         lr_actor=1e-3,          # learning rate of the actor
         lr_critic=1e-3,         # learning rate of the critic
         weight_decay=0.00000001,# L2 weight decay
-        random_seed=0
+        LEARN_EVERY = 1,        # learning timestep interval
+        LEARN_NUM = 5,          # number of learning passes
+        random_seed = 0
     ):
         self.state_size = state_size
         self.action_size = action_size
@@ -143,6 +145,8 @@ class Agent():
         self.lr_actor = lr_actor             # learning rate of the actor
         self.lr_critic = lr_critic           # learning rate of the critic
         self.weight_decay = weight_decay     # L2 weight decay
+        self.LEARN_EVERY = LEARN_EVERY       # learning timestep interval
+        self.LEARN_NUM= LEARN_NUM            # number of learning passes
         self.seed = random.seed(random_seed)
 
         self.timestep = 0
@@ -171,8 +175,8 @@ class Agent():
         # Save experience / reward
         self.memory.add(state, action, reward, next_state, done)
         # Learn, if enough samples are available in memory and at learning interval settings
-        if len(self.memory) > self.batch_size and self.timestep % LEARN_EVERY == 0:
-                for _ in range(LEARN_NUM):
+        if len(self.memory) > self.batch_size and self.timestep % self.LEARN_EVERY == 0:
+                for _ in range(self.LEARN_NUM):
                     experiences = self.memory.sample()
                     self.learn(experiences, self.gamma)
 
@@ -245,12 +249,14 @@ class Agent():
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
 
 ```
+
 ### Multiple Learning Passes per Episode
 
 Performing multiple learning passes per episode seems to provide faster convergence
 and higher scores despite the trade-off of slower training.
 At every training step, the agent will sample experiences from the buffer
 and execute the learn method 5 times.
+
 ``` python
 LEARN_EVERY = 1         # learning interval (no. of episodes)
 LEARN_NUM = 5           # number of passes per learning step
@@ -290,11 +296,6 @@ Shared_Memory = ReplayBuffer(buffer_size=BUFFER_SIZE, batch_size=BATCH_SIZE)
 Only slight changes have been made to the Actor Critic architecture,
 namely the batch normalisation layers and the use of leaky Relus.
 ```python
-def hidden_init(layer):
-    fan_in = layer.weight.data.size()[0]
-    lim = 1. / np.sqrt(fan_in)
-    return (-lim, lim)
-
 class Actor(nn.Module):
     """Actor (Policy) Model."""
 
@@ -320,8 +321,8 @@ class Actor(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        self.fc1.weight.data.uniform_(*hidden_init(self.fc1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
+        self.fc1.weight.data.uniform_(*self.hidden_init(self.fc1))
+        self.fc2.weight.data.uniform_(*self.hidden_init(self.fc2))
         self.fc3.weight.data.uniform_(-3e-3, 3e-3)
 
     def forward(self, state):
@@ -335,6 +336,13 @@ class Actor(nn.Module):
         x = F.leaky_relu(self.fc2(x))
         x = self.bn2(x)
         return torch.tanh(self.fc3(x))
+
+    def hidden_init(self, layer):
+        fan_in = layer.weight.data.size()[0]
+        lim = 1. / np.sqrt(fan_in)
+        return (-lim, lim)
+
+
 
 class Critic(nn.Module):
     """Critic (Value) Model."""
@@ -361,8 +369,8 @@ class Critic(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        self.fcs1.weight.data.uniform_(*hidden_init(self.fcs1))
-        self.fc2.weight.data.uniform_(*hidden_init(self.fc2))
+        self.fcs1.weight.data.uniform_(*self.hidden_init(self.fcs1))
+        self.fc2.weight.data.uniform_(*self.hidden_init(self.fc2))
         self.fc3.weight.data.uniform_(-3e-3, 3e-3)
 
     def forward(self, state, action):
@@ -378,6 +386,10 @@ class Critic(nn.Module):
         #x = self.bn2(x)
         return self.fc3(x)
 
+    def hidden_init(self, layer):
+        fan_in = layer.weight.data.size()[0]
+        lim = 1. / np.sqrt(fan_in)
+        return (-lim, lim)
 ```
 #### Batch normalisation
 Batch normalisation is again used for this project.

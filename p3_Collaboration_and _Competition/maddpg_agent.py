@@ -11,14 +11,7 @@ import torch.optim as optim
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-
-LEARN_EVERY = 1         # learning timestep interval
-LEARN_NUM = 5           # number of learning passes
-BUFFER_SIZE = int(1e6)  # replay buffer size
-BATCH_SIZE = 512        # minibatch size
-SEED = 0
-
-class Agent():
+class Agent(object):
     """Interacts with and learns from the environment."""
     
     def __init__(
@@ -26,14 +19,16 @@ class Agent():
         state_size=None,        # state space size
         action_size=None,       # action size
         memory=None,
-        buffer_size=BUFFER_SIZE,# replay buffer size
-        batch_size=BATCH_SIZE,  # minibatch size
+        buffer_size=int(1e6),   # replay buffer size
+        batch_size=512,         # minibatch size
         gamma=0.99,             # discount factor
         tau=5e-3,               # for soft update of target parameters
         lr_actor=1e-3,          # learning rate of the actor 
         lr_critic=1e-3,         # learning rate of the critic
         weight_decay=0.00000001,# L2 weight decay
-        random_seed=0
+        LEARN_EVERY = 1,        # learning timestep interval
+        LEARN_NUM = 5,          # number of learning passes
+        random_seed = 0
     ):
         self.state_size = state_size
         self.action_size = action_size
@@ -44,6 +39,8 @@ class Agent():
         self.lr_actor = lr_actor             # learning rate of the actor 
         self.lr_critic = lr_critic           # learning rate of the critic
         self.weight_decay = weight_decay     # L2 weight decay
+        self.LEARN_EVERY = LEARN_EVERY       # learning timestep interval
+        self.LEARN_NUM= LEARN_NUM            # number of learning passes
         self.seed = random.seed(random_seed)
         
         self.timestep = 0
@@ -72,8 +69,8 @@ class Agent():
         # Save experience / reward
         self.memory.add(state, action, reward, next_state, done)
         # Learn, if enough samples are available in memory and at learning interval settings
-        if len(self.memory) > self.batch_size and self.timestep % LEARN_EVERY == 0:
-                for _ in range(LEARN_NUM):
+        if len(self.memory) > self.batch_size and self.timestep % self.LEARN_EVERY == 0:
+                for _ in range(self.LEARN_NUM):
                     experiences = self.memory.sample()
                     self.learn(experiences, self.gamma)
                     
@@ -145,7 +142,7 @@ class Agent():
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
 
-class OUNoise:
+class OUNoise(object):
     """Ornstein-Uhlenbeck process."""
 
     def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.02):
@@ -167,10 +164,10 @@ class OUNoise:
         self.state = x + dx
         return self.state
     
-class ReplayBuffer:
+class ReplayBuffer(object):
     """Fixed-size buffer to store experience tuples."""
 
-    def __init__(self, buffer_size=BUFFER_SIZE, batch_size=BATCH_SIZE, seed=SEED, device=device):
+    def __init__(self, buffer_size=int(1e6), batch_size=512, seed=0, device=device):
         """Initialize a ReplayBuffer object.
         Params
         ======
@@ -192,13 +189,16 @@ class ReplayBuffer:
         """Randomly sample a batch of experiences from memory."""
         experiences = random.sample(self.memory, k=self.batch_size)
 
-        states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(self.device)
-        actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).float().to(self.device)
-        rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(self.device)
-        next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(self.device)
-        dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(self.device)
-
+        states = self.convert_to_tensor([e.state for e in experiences if e is not None])
+        actions = self.convert_to_tensor([e.action for e in experiences if e is not None])
+        rewards = self.convert_to_tensor([e.reward for e in experiences if e is not None])
+        next_states = self.convert_to_tensor([e.next_state for e in experiences if e is not None])
+        dones = self.convert_to_tensor([e.done for e in experiences if e is not None])
         return (states, actions, rewards, next_states, dones)
+   
+    def convert_to_tensor(self, arr):
+        """Convert Numpy array to tensor"""
+        return torch.from_numpy(np.vstack(arr)).float().to(self.device)
 
     def __len__(self):
         """Return the current size of internal memory."""
